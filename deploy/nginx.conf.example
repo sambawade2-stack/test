@@ -1,0 +1,62 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Configuration Nginx — Gestion Scolaire (production)
+#
+# RÈGLE DE SÉCURITÉ : la racine du site (root) pointe vers le sous-dossier
+# `public/` du projet, JAMAIS vers la racine du projet.
+# Ainsi .env, app/, config/, storage/... ne sont pas accessibles via le web.
+#
+# À copier dans : /etc/nginx/sites-available/gestionscholaire
+# Puis : ln -s /etc/nginx/sites-available/gestionscholaire /etc/nginx/sites-enabled/
+#        nginx -t && systemctl reload nginx
+# ─────────────────────────────────────────────────────────────────────────────
+
+server {
+    listen 80;
+    listen [::]:80;
+    server_name votre-domaine.com www.votre-domaine.com;
+
+    # 👇 LE POINT CLÉ : on pointe sur /public, pas sur la racine du projet
+    root /var/www/gestionscholaire/public;
+    index index.php;
+
+    charset utf-8;
+    client_max_body_size 20M;   # uploads de photos
+
+    # Toutes les requêtes passent par le routeur Laravel
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    location = /favicon.ico { access_log off; log_not_found off; }
+    location = /robots.txt  { access_log off; log_not_found off; }
+
+    error_page 404 /index.php;
+
+    # Exécution PHP (adaptez la version de la socket php-fpm)
+    location ~ \.php$ {
+        fastcgi_pass unix:/var/run/php/php8.3-fpm.sock;
+        fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
+        include fastcgi_params;
+    }
+
+    # Sécurité : refuse l'accès aux fichiers cachés (.env, .git, .htaccess...)
+    location ~ /\.(?!well-known).* {
+        deny all;
+    }
+
+    # Cache des assets compilés
+    location ~* \.(css|js|jpg|jpeg|png|gif|ico|svg|woff2?)$ {
+        expires 30d;
+        access_log off;
+    }
+}
+
+# ─── HTTPS (recommandé en production — voir Certbot/Let's Encrypt) ─────────────
+# server {
+#     listen 443 ssl http2;
+#     server_name votre-domaine.com www.votre-domaine.com;
+#     root /var/www/gestionscholaire/public;     # ← toujours /public
+#     ssl_certificate     /etc/letsencrypt/live/votre-domaine.com/fullchain.pem;
+#     ssl_certificate_key /etc/letsencrypt/live/votre-domaine.com/privkey.pem;
+#     ... (mêmes blocs location que ci-dessus) ...
+# }

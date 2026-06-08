@@ -168,6 +168,30 @@ php artisan school:detect-unpaid --notify
 
 ---
 
+## 🚀 Déploiement en production
+
+> 🔒 **Sécurité — point essentiel :** en production, le domaine doit pointer vers le
+> dossier **`public/`**, **jamais** vers la racine du projet. Sinon `.env`
+> (mot de passe de la base) deviendrait accessible publiquement via le web.
+
+```
+/var/www/gestionscholaire/     ← racine du PROJET (hors web)
+├── .env  app/  config/  ...    ← PROTÉGÉS
+└── public/                     ← 👈 document root du domaine
+```
+
+Configurations prêtes à l'emploi dans le dossier [`deploy/`](deploy/) :
+
+| Hébergement | Fichier |
+|---|---|
+| Nginx (VPS/dédié) | [`deploy/nginx.conf.example`](deploy/nginx.conf.example) |
+| Apache (VPS/dédié) | [`deploy/apache-vhost.conf.example`](deploy/apache-vhost.conf.example) |
+| Mutualisé (cPanel) | [`deploy/shared-hosting-root.htaccess.example`](deploy/shared-hosting-root.htaccess.example) |
+
+👉 **Guide complet : [`deploy/DEPLOYMENT.md`](deploy/DEPLOYMENT.md)** (checklist, HTTPS, permissions, vérification).
+
+---
+
 ## 📁 Architecture
 
 ```

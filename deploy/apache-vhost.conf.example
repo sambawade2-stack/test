@@ -1,0 +1,50 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Configuration Apache (VirtualHost) — Gestion Scolaire (production)
+#
+# RÈGLE DE SÉCURITÉ : DocumentRoot pointe vers le sous-dossier `public/`,
+# JAMAIS vers la racine du projet.
+#
+# À copier dans : /etc/apache2/sites-available/gestionscholaire.conf
+# Puis : a2enmod rewrite
+#        a2ensite gestionscholaire
+#        apache2ctl configtest && systemctl reload apache2
+# ─────────────────────────────────────────────────────────────────────────────
+
+<VirtualHost *:80>
+    ServerName votre-domaine.com
+    ServerAlias www.votre-domaine.com
+
+    # 👇 LE POINT CLÉ : DocumentRoot = .../public (pas la racine du projet)
+    DocumentRoot /var/www/gestionscholaire/public
+
+    # On autorise UNIQUEMENT public/ (avec les règles de réécriture Laravel)
+    <Directory /var/www/gestionscholaire/public>
+        AllowOverride All
+        Require all granted
+        Options -Indexes +FollowSymLinks
+    </Directory>
+
+    # Filet de sécurité : tout le reste du projet est interdit au web
+    <Directory /var/www/gestionscholaire>
+        Require all denied
+    </Directory>
+    <Directory /var/www/gestionscholaire/public>
+        Require all granted
+    </Directory>
+
+    ErrorLog  ${APACHE_LOG_DIR}/gestionscholaire-error.log
+    CustomLog ${APACHE_LOG_DIR}/gestionscholaire-access.log combined
+</VirtualHost>
+
+# ─── HTTPS (recommandé — généré automatiquement par Certbot) ──────────────────
+# <VirtualHost *:443>
+#     ServerName votre-domaine.com
+#     DocumentRoot /var/www/gestionscholaire/public      # ← toujours /public
+#     SSLEngine on
+#     SSLCertificateFile    /etc/letsencrypt/live/votre-domaine.com/fullchain.pem
+#     SSLCertificateKeyFile /etc/letsencrypt/live/votre-domaine.com/privkey.pem
+#     <Directory /var/www/gestionscholaire/public>
+#         AllowOverride All
+#         Require all granted
+#     </Directory>
+# </VirtualHost>

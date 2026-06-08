@@ -1,0 +1,29 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# .htaccess de SECOURS pour hébergement mutualisé (cPanel, etc.)
+#
+# À utiliser UNIQUEMENT si vous NE POUVEZ PAS changer le "Document Root" du
+# domaine pour le faire pointer sur le dossier public/ (solution idéale).
+#
+# Placez ce fichier à la RACINE du projet (au même niveau que /public),
+# renommé en « .htaccess ».
+#
+# Il redirige toutes les requêtes vers public/ ET bloque l'accès aux
+# fichiers sensibles si jamais le serveur sert la racine du projet.
+# ─────────────────────────────────────────────────────────────────────────────
+
+# 1) Bloque l'accès direct aux fichiers/dossiers sensibles
+<FilesMatch "(^\.env|\.env\..*|composer\.(json|lock)|package\.json|artisan)$">
+    Require all denied
+</FilesMatch>
+
+RedirectMatch 403 ^/?\.git
+RedirectMatch 403 ^/?(app|bootstrap|config|database|resources|routes|storage|tests|vendor)(/|$)
+
+# 2) Redirige tout le trafic vers le dossier public/
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Si la requête ne cible pas déjà /public, on la réécrit vers /public
+    RewriteCond %{REQUEST_URI} !^/public/
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
