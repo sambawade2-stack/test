@@ -186,9 +186,9 @@ Configurations prêtes à l'emploi dans le dossier [`deploy/`](deploy/) :
 |---|---|
 | Nginx (VPS/dédié) | [`deploy/nginx.conf.example`](deploy/nginx.conf.example) |
 | Apache (VPS/dédié) | [`deploy/apache-vhost.conf.example`](deploy/apache-vhost.conf.example) |
-| Mutualisé (cPanel) | [`deploy/shared-hosting-root.htaccess.example`](deploy/shared-hosting-root.htaccess.example) |
+| **cPanel** (mutualisé) | 👉 **[`deploy/CPANEL.md`](deploy/CPANEL.md)** (guide dédié pas à pas) |
 
-👉 **Guide complet : [`deploy/DEPLOYMENT.md`](deploy/DEPLOYMENT.md)** (checklist, HTTPS, permissions, vérification).
+👉 **Guide général : [`deploy/DEPLOYMENT.md`](deploy/DEPLOYMENT.md)** (checklist, HTTPS, permissions, vérification).
 
 ---
 

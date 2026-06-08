@@ -1,0 +1,39 @@
+<?php
+/**
+ * index.php ADAPTÉ pour cPanel — Option 2 (domaine principal verrouillé sur public_html).
+ *
+ * À placer dans : public_html/index.php
+ * Hypothèse de structure :
+ *
+ *   /home/UTILISATEUR/
+ *   ├── gestionscholaire/        ← l'application (HORS public_html, donc protégée)
+ *   │   ├── .env  app/  vendor/  bootstrap/  storage/ ...
+ *   └── public_html/             ← racine web du domaine
+ *       ├── index.php            ← CE FICHIER
+ *       ├── .htaccess            ← copié depuis gestionscholaire/public/.htaccess
+ *       └── build/  favicon.ico  robots.txt   ← copiés depuis gestionscholaire/public/
+ *
+ * 👉 Adaptez « gestionscholaire » si votre dossier d'app porte un autre nom.
+ */
+
+use Illuminate\Foundation\Application;
+use Illuminate\Http\Request;
+
+define('LARAVEL_START', microtime(true));
+
+// Chemin vers l'application (un cran au-dessus de public_html)
+$appBase = __DIR__.'/../gestionscholaire';
+
+// Mode maintenance...
+if (file_exists($maintenance = $appBase.'/storage/framework/maintenance.php')) {
+    require $maintenance;
+}
+
+// Autoloader Composer...
+require $appBase.'/vendor/autoload.php';
+
+// Démarrage de Laravel...
+/** @var Application $app */
+$app = require_once $appBase.'/bootstrap/app.php';
+
+$app->handleRequest(Request::capture());

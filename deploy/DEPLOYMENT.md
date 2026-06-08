@@ -33,16 +33,15 @@ DocumentRoot /var/www/gestionscholaire/public   # ← /public
 ```
 Activez le module rewrite : `a2enmod rewrite`
 
-### C. Hébergement **mutualisé** (cPanel, Plesk…)
+### C. Hébergement **cPanel** 👉 guide dédié : **[`CPANEL.md`](CPANEL.md)**
 
-**Option recommandée** — changez le Document Root :
-1. cPanel → **Domaines** → votre domaine → **Document Root**
-2. Indiquez : `gestionscholaire/public`
+Résumé des 2 options :
+1. **Recommandé** — cPanel → Domaines → **Document Root** = `gestionscholaire/public`
+2. **Domaine principal verrouillé** — app hors `public_html` + `index.php` adapté
+   ([`cpanel-index.php.example`](cpanel-index.php.example))
 
-**Option de secours** (si le Document Root n'est pas modifiable) :
-- Placez [`shared-hosting-root.htaccess.example`](shared-hosting-root.htaccess.example)
-  à la racine du projet, renommé `.htaccess`. Il redirige le trafic vers `public/`
-  et bloque l'accès aux fichiers sensibles.
+Le guide [`CPANEL.md`](CPANEL.md) couvre tout : base de données, PHP 8.3,
+Git, Composer, assets, `.env`, migrations, HTTPS (AutoSSL) et cron.
 
 ---
 
