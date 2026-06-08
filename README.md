@@ -1,58 +1,191 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🎓 Gestion Scolaire
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Application web de gestion d'un établissement scolaire (collège / lycée), de la 6ème à la Terminale.
+Développée avec **Laravel 12**.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## ✨ Fonctionnalités
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### Élèves & classes
+- Gestion des élèves (CRUD) avec **photo** (upload ou capture webcam)
+- **Matricule professionnel** auto-généré : `LT-2026-0001` (code école · année · séquence)
+- **Badge scolaire avec QR code** (prévisualisation + impression PDF, individuel ou par classe)
+- Gestion des classes par cycle (collège / lycée) et par année scolaire
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### Paiements
+- Frais d'**inscription** et **mensualités** (avec paiement par tranche / soldes)
+- **Reçu PDF** automatique pour chaque paiement
+- Détection automatique des **impayés** (après le 10 de chaque mois)
+- Complément de paiement (régler le solde restant)
 
-## Learning Laravel
+### Personnel & paie
+- Enseignants et personnel (administratif / appoint)
+- Fiches de **paie mensuelle** + **historique PDF** par employé
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### Présences & certificats
+- **Feuille d'appel** par classe et par jour (présent / absent / retard / excusé)
+- Certificat de **scolarité** et d'**assiduité** (PDF)
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Contrôle d'accès au badge
+- **Scan du QR** pour vérifier si un élève est **en règle** (caméra ou saisie manuelle)
+- **Journal des passages** (historique des scans)
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+### Pilotage
+- **Tableau de bord** avec statistiques
+- **Tableau de bord financier** (recettes mensuelles, graphiques)
+- **Exports Excel & PDF** (rapport financier, paiements, élèves)
 
-## Agentic Development
+### Sécurité — 6 profils
+`admin` · `directeur` · `comptable` · `surveillant` · `secrétaire` · `caissier`
+Chaque profil a ses droits (contrôle d'accès côté serveur + menus adaptés).
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+---
+
+## 🛠️ Stack technique
+
+| Composant | Version |
+|---|---|
+| PHP | 8.3+ |
+| Laravel | 12 |
+| Base de données | MySQL 8 |
+| Front | Blade + Tailwind CSS v4 (Vite) |
+| PDF | barryvdh/laravel-dompdf |
+| Excel | maatwebsite/excel |
+| QR code | endroid/qr-code |
+| Rôles | spatie/laravel-permission |
+
+---
+
+## 🚀 Installation
+
+### Prérequis
+- PHP 8.3+ avec extensions `gd`, `zip`, `pdo_mysql`
+- Composer 2
+- Node.js 18+ & npm
+- MySQL 8
+
+### Étapes
 
 ```bash
-composer require laravel/boost --dev
+# 1. Cloner le dépôt
+git clone https://github.com/sambawade2-stack/test.git gestionscholaire
+cd gestionscholaire
 
-php artisan boost:install
+# 2. Dépendances PHP & JS
+composer install
+npm install
+
+# 3. Configuration
+cp .env.example .env
+php artisan key:generate
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+Éditez ensuite le fichier `.env` :
 
-## Contributing
+```dotenv
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=gestion_scholaire
+DB_USERNAME=root
+DB_PASSWORD=VOTRE_MOT_DE_PASSE
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+# Établissement (affiché sur badges, reçus, certificats)
+SCHOOL_NAME="Lycée Technique"
+SCHOOL_CODE="LT"
+SCHOOL_PHONE="+221 33 800 00 00"
+SCHOOL_ADDRESS="Dakar, Sénégal"
+SCHOOL_EMAIL="direction@ecole.sn"
+```
 
-## Code of Conduct
+```bash
+# 4. Base de données
+mysql -u root -p -e "CREATE DATABASE gestion_scholaire CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+php artisan migrate
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+# 5. Lien de stockage (photos, fichiers)
+php artisan storage:link
 
-## Security Vulnerabilities
+# 6. Compiler les assets
+npm run build
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+# 7. Lancer
+php artisan serve
+```
 
-## License
+L'application est accessible sur **http://localhost:8000**.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### Créer le compte administrateur
+
+```bash
+php artisan tinker --execute="App\Models\User::create([
+    'name' => 'Administrateur',
+    'email' => 'admin@ecole.sn',
+    'password' => bcrypt('password'),
+    'role' => 'admin',
+    'is_active' => true,
+]);"
+```
+
+| Identifiant | Valeur |
+|---|---|
+| Email | `admin@ecole.sn` |
+| Mot de passe | `password` |
+
+> ⚠️ Changez ce mot de passe après la première connexion.
+
+---
+
+## 🌐 Accès depuis d'autres machines (réseau local)
+
+```bash
+php artisan serve --host=0.0.0.0 --port=8000
+```
+
+Les autres machines accèdent via `http://<IP-DE-LA-MACHINE>:8000`.
+
+> ⚠️ **Caméra (scan badge / capture photo)** : les navigateurs exigent **HTTPS** ou `localhost`.
+> Sur les autres machines en HTTP, la caméra est bloquée — la **saisie manuelle** et l'**import de fichier** restent disponibles.
+> Pour la caméra partout, servez l'app en HTTPS (ex. `tailscale serve`, `mkcert`, reverse-proxy TLS).
+
+---
+
+## ⏰ Tâche planifiée (impayés)
+
+La détection des impayés est planifiée le 11 de chaque mois. Activez le scheduler :
+
+```bash
+# crontab -e
+* * * * * cd /chemin/vers/gestionscholaire && php artisan schedule:run >> /dev/null 2>&1
+```
+
+Détection manuelle :
+
+```bash
+php artisan school:detect-unpaid --notify
+```
+
+---
+
+## 📁 Architecture
+
+```
+app/
+├── Console/Commands/   # DetectUnpaidStudents
+├── Exports/            # Exports Excel (paiements, élèves, finances)
+├── Http/
+│   ├── Controllers/    # Students, Payments, Payrolls, Scan, Finance...
+│   ├── Middleware/     # CheckRole (contrôle d'accès par profil)
+│   └── Requests/       # Validation des formulaires
+├── Models/             # Eloquent (Student, Payment, Payroll, ScanLog...)
+└── Services/           # PaymentService, PdfService, NotificationService
+resources/views/        # Blade + Tailwind
+database/migrations/    # Schéma complet
+```
+
+---
+
+## 📄 Licence
+
+Projet propriétaire. Tous droits réservés.
