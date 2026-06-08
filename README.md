@@ -184,9 +184,13 @@ Configurations prêtes à l'emploi dans le dossier [`deploy/`](deploy/) :
 
 | Hébergement | Fichier |
 |---|---|
+| **Dokploy / Docker** ⭐ recommandé | 👉 **[`deploy/DOKPLOY.md`](deploy/DOKPLOY.md)** (`Dockerfile` + `docker-compose.yml` inclus) |
 | Nginx (VPS/dédié) | [`deploy/nginx.conf.example`](deploy/nginx.conf.example) |
 | Apache (VPS/dédié) | [`deploy/apache-vhost.conf.example`](deploy/apache-vhost.conf.example) |
-| **cPanel** (mutualisé) | 👉 **[`deploy/CPANEL.md`](deploy/CPANEL.md)** (guide dédié pas à pas) |
+| cPanel (mutualisé) | [`deploy/CPANEL.md`](deploy/CPANEL.md) |
+
+Avec **Dokploy/Docker**, l'image fige PHP 8.3, sert déjà `public/`, et le HTTPS
+est automatique — aucun réglage de version PHP ni de Document Root.
 
 👉 **Guide général : [`deploy/DEPLOYMENT.md`](deploy/DEPLOYMENT.md)** (checklist, HTTPS, permissions, vérification).
 

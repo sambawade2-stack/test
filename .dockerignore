@@ -1,0 +1,25 @@
+.git
+.github
+node_modules
+vendor
+.env
+.env.*
+!.env.example
+public/build
+public/storage
+public/hot
+storage/app/public/*
+storage/logs/*
+storage/framework/cache/data/*
+storage/framework/sessions/*
+storage/framework/views/*
+storage/*.key
+# Caches Laravel locaux (régénérés au runtime) — évite d'embarquer des
+# providers de dev (ex: laravel/pail) absents de l'image --no-dev.
+bootstrap/cache/*.php
+tests
+*.md
+deploy
+.editorconfig
+.gitignore
+.gitattributes

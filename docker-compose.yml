@@ -1,0 +1,68 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Gestion Scolaire — stack Docker Compose pour Dokploy
+#
+# Dans Dokploy : créez une application de type "Docker Compose", pointez sur ce
+# dépôt, puis renseignez les variables d'environnement (voir deploy/DOKPLOY.md).
+# Dokploy gère le domaine + le HTTPS automatiquement vers le service "app" (port 80).
+# ─────────────────────────────────────────────────────────────────────────────
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      - db
+    environment:
+      APP_NAME: "${APP_NAME:-Gestion Scolaire}"
+      APP_ENV: production
+      APP_KEY: "${APP_KEY}"
+      APP_DEBUG: "false"
+      APP_URL: "${APP_URL}"
+      APP_LOCALE: fr
+      APP_FALLBACK_LOCALE: fr
+
+      DB_CONNECTION: mysql
+      DB_HOST: db
+      DB_PORT: "3306"
+      DB_DATABASE: "${DB_DATABASE}"
+      DB_USERNAME: "${DB_USERNAME}"
+      DB_PASSWORD: "${DB_PASSWORD}"
+
+      SESSION_DRIVER: database
+      QUEUE_CONNECTION: database
+      CACHE_STORE: database
+
+      SCHOOL_NAME: "${SCHOOL_NAME:-Lycée Technique}"
+      SCHOOL_CODE: "${SCHOOL_CODE:-LT}"
+      SCHOOL_PHONE: "${SCHOOL_PHONE:-}"
+      SCHOOL_ADDRESS: "${SCHOOL_ADDRESS:-}"
+      SCHOOL_EMAIL: "${SCHOOL_EMAIL:-}"
+
+      MAIL_MAILER: log
+    volumes:
+      # Photos uploadées : persistées hors du conteneur
+      - storage_uploads:/var/www/html/storage/app/public
+    expose:
+      - "80"
+
+  db:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: "${DB_DATABASE}"
+      MYSQL_USER: "${DB_USERNAME}"
+      MYSQL_PASSWORD: "${DB_PASSWORD}"
+      MYSQL_ROOT_PASSWORD: "${DB_ROOT_PASSWORD}"
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p${DB_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  db_data:
+  storage_uploads:
