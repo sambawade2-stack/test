@@ -14,7 +14,8 @@
 /.zed
 /auth.json
 /node_modules
-/public/build
+# /public/build est suivi par Git pour le déploiement cPanel (pas de Node.js en prod).
+# Compilez avec `npm run build` avant de committer.
 /public/fonts-manifest.dev.json
 /public/hot
 /public/storage
