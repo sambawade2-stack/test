@@ -46,6 +46,12 @@ services:
       - storage_uploads:/var/www/html/storage/app/public
     expose:
       - "80"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:80/login"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 120s
 
   db:
     image: mysql:8.0

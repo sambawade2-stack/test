@@ -4,16 +4,31 @@ Dokploy déploie l'application via Docker à partir du dépôt GitHub. Le HTTPS,
 le domaine et la base de données sont gérés pour vous. **Aucun souci de version
 PHP** (l'image fige PHP 8.3) ni de Document Root (Nginx sert déjà `public/`).
 
+> ## ⚠️ À LIRE EN PREMIER — n'utilisez PAS « Application » (Nixpacks)
+>
+> Si vous créez une **Application**, Dokploy utilise **Nixpacks** (auto-build) qui
+> lance son propre `npm run build` et **échoue** :
+> ```
+> process "/bin/bash -ol pipefail -c npm run build" did not complete successfully: exit code 1
+> ❌ Nixpacks build failed
+> ```
+> **Ce projet n'utilise PAS Nixpacks.** Il faut créer un service de type
+> **Compose** (qui utilise notre `docker-compose.yml` + `Dockerfile`).
+> → Voir l'étape 1 ci-dessous.
+
 ---
 
-## 1. Créer l'application dans Dokploy
+## 1. Créer le service — type **Compose** (PAS « Application »)
 
-1. Dokploy → **Create Application** → type **Docker Compose** (Compose Type: `docker-compose.yml`)
-2. **Source** : Git → dépôt `https://github.com/sambawade2-stack/test.git`, branche `main`
-3. **Compose Path** : `docker-compose.yml` (à la racine)
+1. Dokploy → dans votre projet → **Create Service** → **Compose**
+   *(intitulé selon version : « Compose », « Docker Compose ».
+   ⚠️ surtout pas « Application » qui déclenche Nixpacks.)*
+2. **Provider / Source** : Git → `https://github.com/sambawade2-stack/test.git`, branche `main`
+3. **Compose Path** : `docker-compose.yml`
+4. **Build Type** : laissez sur **Docker Compose** (il lit notre Dockerfile, pas Nixpacks)
 
-> Dokploy lira le `Dockerfile` (construction de l'app) et le `docker-compose.yml`
-> (app + base MySQL + volumes).
+> Dokploy lira le `docker-compose.yml` → construit l'app via notre `Dockerfile`
+> + démarre MySQL + volumes persistants. Tout est inclus, rien d'autre à créer.
 
 ## 2. Variables d'environnement
 
@@ -107,3 +122,30 @@ que ce soit automatique).
 - `https://demo.thioubalotech.com` → page de connexion stylée
 - `https://demo.thioubalotech.com/.env` → **404** (jamais le contenu) 🔒
 - Logs : onglet **Logs** de Dokploy (sortie Nginx + PHP-FPM + migrations)
+
+---
+
+## 🛠️ Dépannage
+
+### ❌ `Nixpacks build failed` / `npm run build ... exit code 1`
+Vous avez créé une **Application** (build Nixpacks). Supprimez-la et recréez un
+service de type **Compose** (étape 1). Notre image gère elle-même la compilation
+des assets — Nixpacks ne doit pas intervenir.
+
+### ❌ `No such container: select-a-container`
+Le build a échoué → aucun conteneur n'existe encore. Ce message disparaît une fois
+le déploiement (Compose) réussi. Corrigez d'abord le build (point ci-dessus).
+
+### ❌ La page reste en erreur après déploiement
+1. **APP_KEY vide** → renseignez-la (étape 2).
+2. **Migrations** : ouvrez les **Logs**, vérifiez les lignes `migrate ... DONE`.
+   Si « Connection refused », la base met du temps à démarrer — l'entrypoint
+   réessaie automatiquement (jusqu'à 5 fois).
+3. **APP_URL** doit correspondre exactement au domaine (https, sans `/` final).
+
+### 🔐 Recommandé en production
+Ajoutez ces variables (HTTPS uniquement) :
+```dotenv
+APP_DEBUG=false
+SESSION_SECURE_COOKIE=true
+```
