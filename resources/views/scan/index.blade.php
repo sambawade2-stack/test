@@ -137,6 +137,13 @@ async function verify(code) {
     }
 }
 
+// Échappe le HTML pour empêcher toute injection (XSS) via les données scannées
+function esc(v) {
+    return String(v ?? '').replace(/[&<>"']/g, c => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    }[c]));
+}
+
 function renderResult(data) {
     document.getElementById('resultIdle').classList.add('hidden');
     const panel = document.getElementById('resultContent');
@@ -149,7 +156,7 @@ function renderResult(data) {
                     <svg class="w-8 h-8 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                 </div>
                 <p class="font-bold text-amber-800">Élève introuvable</p>
-                <p class="text-sm text-amber-600 mt-1">${data.message ?? ''}</p>
+                <p class="text-sm text-amber-600 mt-1">${esc(data.message ?? '')}</p>
             </div>`;
         return;
     }
@@ -159,11 +166,11 @@ function renderResult(data) {
     const ok = st.in_order;
 
     const photo = s.photo
-        ? `<img src="${s.photo}" class="w-16 h-16 rounded-full object-cover border-2 border-white shadow">`
-        : `<div class="w-16 h-16 rounded-full bg-white/30 flex items-center justify-center"><span class="text-white text-2xl font-bold">${s.name.charAt(0)}</span></div>`;
+        ? `<img src="${esc(s.photo)}" class="w-16 h-16 rounded-full object-cover border-2 border-white shadow">`
+        : `<div class="w-16 h-16 rounded-full bg-white/30 flex items-center justify-center"><span class="text-white text-2xl font-bold">${esc(s.name.charAt(0))}</span></div>`;
 
     const reasonsHtml = (st.reasons && st.reasons.length)
-        ? `<ul class="mt-2 space-y-1">${st.reasons.map(r => `<li class="text-sm flex items-start gap-1.5"><span class="mt-1">•</span><span>${r}</span></li>`).join('')}</ul>`
+        ? `<ul class="mt-2 space-y-1">${st.reasons.map(r => `<li class="text-sm flex items-start gap-1.5"><span class="mt-1">•</span><span>${esc(r)}</span></li>`).join('')}</ul>`
         : '';
 
     panel.innerHTML = `
@@ -172,8 +179,8 @@ function renderResult(data) {
                 ${photo}
                 <div class="min-w-0">
                     <p class="text-xs uppercase tracking-wide opacity-80">${ok ? 'En règle' : 'Pas en règle'}</p>
-                    <p class="text-lg font-bold truncate">${s.name}</p>
-                    <p class="text-sm opacity-90">${s.classroom ?? '—'} · ${s.matricule}</p>
+                    <p class="text-lg font-bold truncate">${esc(s.name)}</p>
+                    <p class="text-sm opacity-90">${esc(s.classroom ?? '—')} · ${esc(s.matricule)}</p>
                 </div>
             </div>
         </div>

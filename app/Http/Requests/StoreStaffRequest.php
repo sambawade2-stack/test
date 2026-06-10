@@ -24,7 +24,7 @@ class StoreStaffRequest extends FormRequest
             'gender'        => 'required|in:M,F',
             'date_of_birth' => 'nullable|date|before:today',
             'nationality'   => 'nullable|string|max:50',
-            'photo'         => 'nullable|image|max:2048',
+            'photo'         => 'nullable|image|mimes:jpeg,jpg,png,webp|max:2048',
             'category'      => 'required|in:administratif,appoint',
             'position'      => 'required|string|max:80',
             'hire_date'     => 'required|date',

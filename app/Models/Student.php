@@ -192,15 +192,15 @@ class Student extends Model
     {
         $this->loadMissing(['classroom', 'schoolYear']);
 
+        // Données NON sensibles uniquement : le QR d'un badge est physiquement
+        // visible/scannable par tous. Le tuteur/contact sont volontairement exclus
+        // (vie privée). Le scan de vérification se base sur le MATRICULE.
         $lines = [
             'ETABLISSEMENT: ' . env('SCHOOL_NAME', 'Établissement'),
             'MATRICULE: ' . $this->registration_number,
             'NOM: ' . $this->full_name,
-            'NE(E) LE: ' . $this->date_of_birth?->format('d/m/Y'),
             'CLASSE: ' . ($this->classroom?->name ?? '—'),
             'ANNEE: ' . ($this->schoolYear?->name ?? '—'),
-            'TUTEUR: ' . ($this->parent_name ?? '—'),
-            'CONTACT: ' . ($this->parent_phone ?? '—'),
         ];
 
         return implode("\n", $lines);

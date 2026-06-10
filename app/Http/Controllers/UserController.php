@@ -52,7 +52,7 @@ class UserController extends Controller implements HasMiddleware
             'email'    => 'required|email|max:120|unique:users,email',
             'phone'    => 'nullable|string|max:20',
             'role'     => ['required', Rule::in(array_keys(User::ROLES))],
-            'password' => ['required', 'confirmed', Password::min(6)],
+            'password' => ['required', 'confirmed', Password::min(8)->letters()->numbers()],
         ]);
 
         $data['password']  = Hash::make($data['password']);
@@ -76,7 +76,7 @@ class UserController extends Controller implements HasMiddleware
             'email'    => ['required', 'email', 'max:120', Rule::unique('users')->ignore($user->id)],
             'phone'    => 'nullable|string|max:20',
             'role'     => ['required', Rule::in(array_keys(User::ROLES))],
-            'password' => ['nullable', 'confirmed', Password::min(6)],
+            'password' => ['nullable', 'confirmed', Password::min(8)->letters()->numbers()],
         ]);
 
         if (!empty($data['password'])) {

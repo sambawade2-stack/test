@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Route;
 require __DIR__ . '/auth.php';
 
 // ─── Routes protégées ─────────────────────────────────────────────────────────
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'active'])->group(function () {
 
     // Dashboard
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');

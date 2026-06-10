@@ -21,7 +21,7 @@ class StoreStudentRequest extends FormRequest
             'date_of_birth'    => 'required|date|before:today',
             'place_of_birth'   => 'nullable|string|max:80',
             'gender'           => 'required|in:M,F',
-            'photo'            => 'nullable|image|max:2048',
+            'photo'            => 'nullable|image|mimes:jpeg,jpg,png,webp|max:2048',
             'address'          => 'nullable|string|max:255',
             'phone'            => 'nullable|string|max:20',
             'nationality'      => 'nullable|string|max:50',
