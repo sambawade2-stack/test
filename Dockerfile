@@ -16,15 +16,12 @@ RUN npm run build
 # ─── Stage 2 : application PHP 8.3 (FPM) + Nginx ─────────────────────────────
 FROM php:8.3-fpm-alpine AS app
 
-# Paquets runtime + extensions PHP nécessaires (gd, zip, pdo_mysql, bcmath...)
-RUN apk add --no-cache \
-        nginx supervisor \
-        libpng libjpeg-turbo freetype libzip icu-libs oniguruma \
-    && apk add --no-cache --virtual .build-deps \
-        $PHPIZE_DEPS libpng-dev libjpeg-turbo-dev freetype-dev libzip-dev icu-dev oniguruma-dev \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install -j"$(nproc)" pdo_mysql mbstring bcmath gd zip intl exif pcntl opcache \
-    && apk del .build-deps
+# Installateur d'extensions PHP : binaires PRÉCOMPILÉS (pas de compilation source).
+# Réduit fortement le temps de build (intl/gd ne sont plus compilés).
+ADD --chmod=0755 https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
+
+RUN apk add --no-cache nginx supervisor \
+    && install-php-extensions pdo_mysql mbstring bcmath gd zip intl exif pcntl opcache
 
 # Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
