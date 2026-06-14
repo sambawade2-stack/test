@@ -17,38 +17,38 @@
             <div class="flex items-center justify-between h-14">
 
                 {{-- Logo + liens --}}
-                <div class="flex items-center gap-6">
-                    <a href="{{ route('dashboard') }}" class="flex items-center gap-2.5 shrink-0">
-                        <div class="w-7 h-7 bg-white/20 rounded-lg flex items-center justify-center">
+                <div class="flex items-center gap-3 min-w-0">
+                    <a href="{{ route('dashboard') }}" class="flex items-center gap-2 shrink-0">
+                        <div class="w-7 h-7 bg-white/20 rounded-lg flex items-center justify-center shrink-0">
                             <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"/>
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/>
                             </svg>
                         </div>
-                        <span class="text-white font-bold text-sm hidden sm:block">
+                        <span class="text-white font-bold text-sm hidden 2xl:block whitespace-nowrap">
                             {{ env('SCHOOL_NAME', config('app.name')) }}
                         </span>
                     </a>
 
-                    <div class="hidden md:flex items-center gap-1">
+                    <div class="hidden lg:flex items-center gap-0.5">
 
                         {{-- Tableau de bord --}}
                         <a href="{{ route('dashboard') }}"
-                           class="px-3 py-1.5 rounded-lg text-sm font-medium transition
+                           class="px-2.5 py-1.5 rounded-lg text-[13px] font-medium whitespace-nowrap transition
                                   {{ request()->routeIs('dashboard') ? 'bg-white/20 text-white' : 'text-indigo-100 hover:bg-white/10' }}">
                             Tableau de bord
                         </a>
 
                         {{-- Élèves --}}
                         <a href="{{ route('students.index') }}"
-                           class="px-3 py-1.5 rounded-lg text-sm font-medium transition
+                           class="px-2.5 py-1.5 rounded-lg text-[13px] font-medium whitespace-nowrap transition
                                   {{ request()->routeIs('students.*') ? 'bg-white/20 text-white' : 'text-indigo-100 hover:bg-white/10' }}">
                             Élèves
                         </a>
 
                         {{-- Classes --}}
                         <a href="{{ route('classrooms.index') }}"
-                           class="px-3 py-1.5 rounded-lg text-sm font-medium transition
+                           class="px-2.5 py-1.5 rounded-lg text-[13px] font-medium whitespace-nowrap transition
                                   {{ request()->routeIs('classrooms.*') ? 'bg-white/20 text-white' : 'text-indigo-100 hover:bg-white/10' }}">
                             Classes
                         </a>
@@ -56,7 +56,7 @@
                         {{-- Présences --}}
                         @if(auth()->user()->canAccess('attendance'))
                         <a href="{{ route('attendance.index') }}"
-                           class="px-3 py-1.5 rounded-lg text-sm font-medium transition
+                           class="px-2.5 py-1.5 rounded-lg text-[13px] font-medium whitespace-nowrap transition
                                   {{ request()->routeIs('attendance.*') ? 'bg-white/20 text-white' : 'text-indigo-100 hover:bg-white/10' }}">
                             Présences
                         </a>
@@ -65,7 +65,7 @@
                         {{-- Scanner (profils autorisés) --}}
                         @if(in_array(auth()->user()->role, ['admin','directeur','comptable','surveillant','caissier']))
                         <a href="{{ route('scan.index') }}"
-                           class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition
+                           class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[13px] font-medium whitespace-nowrap transition
                                   {{ request()->routeIs('scan.*') ? 'bg-white/20 text-white' : 'text-indigo-100 hover:bg-white/10' }}">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/>
@@ -77,7 +77,7 @@
                         {{-- Personnel dropdown --}}
                         @if(auth()->user()->canAccess('personnel_view'))
                         <div class="relative group">
-                            <button class="flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-medium transition
+                            <button class="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[13px] font-medium whitespace-nowrap transition
                                 {{ request()->routeIs('teachers.*') || request()->routeIs('staff.*') || request()->routeIs('payrolls.*') ? 'bg-white/20 text-white' : 'text-indigo-100 hover:bg-white/10' }}">
                                 Personnel
                                 <svg class="w-3.5 h-3.5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -107,7 +107,7 @@
                         {{-- Paiements dropdown --}}
                         @if(auth()->user()->canAccess('payments'))
                         <div class="relative group">
-                            <button class="flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-medium transition
+                            <button class="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[13px] font-medium whitespace-nowrap transition
                                 {{ request()->routeIs('payments.*') ? 'bg-white/20 text-white' : 'text-indigo-100 hover:bg-white/10' }}">
                                 Paiements
                                 <svg class="w-3.5 h-3.5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -137,7 +137,7 @@
                         {{-- Finances --}}
                         @if(auth()->user()->canAccess('finance'))
                         <a href="{{ route('finance.index') }}"
-                           class="px-3 py-1.5 rounded-lg text-sm font-medium transition
+                           class="px-2.5 py-1.5 rounded-lg text-[13px] font-medium whitespace-nowrap transition
                                   {{ request()->routeIs('finance.*') ? 'bg-white/20 text-white' : 'text-indigo-100 hover:bg-white/10' }}">
                             Finances
                         </a>
@@ -147,15 +147,15 @@
                 </div>
 
                 {{-- Utilisateur --}}
-                <div class="flex items-center gap-3">
+                <div class="flex items-center gap-2 shrink-0">
                     @auth
-                    <div class="hidden sm:flex items-center gap-2">
-                        <div class="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center">
+                    <div class="flex items-center gap-2">
+                        <div class="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center shrink-0">
                             <span class="text-white text-xs font-bold">
                                 {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
                             </span>
                         </div>
-                        <span class="text-indigo-100 text-sm">{{ explode(' ', auth()->user()->name)[0] }}</span>
+                        <span class="text-indigo-100 text-sm hidden 2xl:block whitespace-nowrap">{{ explode(' ', auth()->user()->name)[0] }}</span>
                     </div>
                     @if(auth()->user()->canAccess('users'))
                     <a href="{{ route('users.index') }}"
