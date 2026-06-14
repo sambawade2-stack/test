@@ -18,7 +18,7 @@
             </svg>
         </div>
         <h1 class="text-2xl font-bold text-gray-900">{{ env('SCHOOL_NAME', config('app.name')) }}</h1>
-        <p class="text-sm text-gray-500 mt-1">Système de gestion scolaire</p>
+        <p class="text-sm text-gray-500 mt-1">Connectez-vous à votre espace</p>
     </div>
 
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
@@ -62,7 +62,7 @@
     </div>
 
     <p class="text-center text-xs text-gray-400 mt-6">
-        {{ config('app.name') }} · Système de gestion scolaire
+        © {{ date('Y') }} {{ env('SCHOOL_NAME', config('app.name')) }}
     </p>
 </div>
 

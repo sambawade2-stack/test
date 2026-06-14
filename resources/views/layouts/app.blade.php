@@ -258,7 +258,7 @@
     {{-- Footer --}}
     <footer class="border-t border-gray-100 py-3">
         <p class="text-center text-xs text-gray-300">
-            {{ env('SCHOOL_NAME', config('app.name')) }} · Système de gestion scolaire
+            © {{ date('Y') }} {{ env('SCHOOL_NAME', config('app.name')) }}
         </p>
     </footer>
 
