@@ -52,6 +52,9 @@ services:
       timeout: 5s
       retries: 5
       start_period: 120s
+    networks:
+      - dokploy-network   # accessible par le routeur Traefik de Dokploy
+      - internal          # communication avec la base
 
   db:
     image: mysql:8.0
@@ -68,7 +71,17 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - internal          # base isolée (pas exposée à Traefik)
 
 volumes:
   db_data:
   storage_uploads:
+
+networks:
+  # Réseau partagé avec Traefik (créé par Dokploy). Indispensable pour que
+  # le domaine soit routé vers le service "app".
+  dokploy-network:
+    external: true
+  internal:
+    driver: bridge
