@@ -26,6 +26,9 @@ RUN apk add --no-cache nginx supervisor \
 # Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
+# Réglages PHP de production (display_errors=Off → PDF/Excel non corrompus, mémoire, uploads)
+COPY docker/php.ini /usr/local/etc/php/conf.d/zz-app.ini
+
 WORKDIR /var/www/html
 
 # Dépendances PHP (sans scripts : la découverte des packages se fait au runtime)
@@ -38,8 +41,9 @@ COPY . .
 # Assets compilés issus du stage 1
 COPY --from=assets /app/public/build ./public/build
 
-# Permissions pour php-fpm (www-data)
-RUN chown -R www-data:www-data storage bootstrap/cache \
+# Dossier de cache des polices DomPDF + permissions pour php-fpm (www-data)
+RUN mkdir -p storage/fonts \
+    && chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
 
 # Configs Nginx / Supervisor / entrypoint
