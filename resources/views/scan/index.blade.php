@@ -82,6 +82,8 @@ function startScan() {
     document.getElementById('startScanBtn').classList.add('hidden');
     document.getElementById('stopScanBtn').classList.remove('hidden');
 
+    getCtx(); // initialise l'audio sous le geste utilisateur (requis sur mobile)
+
     html5Qr = new Html5Qrcode('reader');
     html5Qr.start(
         { facingMode: 'environment' },
@@ -120,7 +122,6 @@ function verifyManual() {
 async function verify(code) {
     if (busy) return;
     busy = true;
-    beep();
 
     try {
         const res = await fetch('{{ route('scan.verify') }}', {
@@ -145,6 +146,7 @@ function esc(v) {
 }
 
 function renderResult(data) {
+    clearTimeout(resetTimer);
     document.getElementById('resultIdle').classList.add('hidden');
     const panel = document.getElementById('resultContent');
     panel.classList.remove('hidden');
@@ -158,6 +160,7 @@ function renderResult(data) {
                 <p class="font-bold text-amber-800">Élève introuvable</p>
                 <p class="text-sm text-amber-600 mt-1">${esc(data.message ?? '')}</p>
             </div>`;
+        finishScan(false);
         return;
     }
 
@@ -210,25 +213,67 @@ function renderResult(data) {
                 ${!ok ? `<a href="{{ url('payments/create') }}?student_id=${s.id}" class="flex-1 text-center bg-indigo-600 hover:bg-indigo-700 text-white text-sm px-4 py-2 rounded-xl font-medium transition">Encaisser</a>` : ''}
             </div>
         </div>`;
+
+    finishScan(ok);
 }
 
 function renderError(msg) {
+    clearTimeout(resetTimer);
     document.getElementById('resultIdle').classList.add('hidden');
     const panel = document.getElementById('resultContent');
     panel.classList.remove('hidden');
     panel.innerHTML = `<div class="px-5 py-8 text-center text-red-600">${msg}</div>`;
+    finishScan(false);
 }
 
-// Petit bip sonore au scan
-function beep() {
+// ─── Son + disparition auto du résultat ──────────────────────────────────────
+let resetTimer = null;
+
+function finishScan(success) {
+    playTone(success);                       // son selon le résultat
+    clearTimeout(resetTimer);
+    resetTimer = setTimeout(resetResult, 3000); // efface après 3 s → badge suivant
+}
+
+function resetResult() {
+    const panel = document.getElementById('resultContent');
+    panel.classList.add('hidden');
+    panel.innerHTML = '';
+    document.getElementById('resultIdle').classList.remove('hidden');
+    lastCode = null;   // autorise le rescan du même badge ensuite
+}
+
+// Contexte audio partagé (initialisé sous un geste utilisateur → fiable sur mobile)
+let audioCtx = null;
+function getCtx() {
     try {
-        const ctx = new (window.AudioContext || window.webkitAudioContext)();
-        const o = ctx.createOscillator(); const g = ctx.createGain();
-        o.connect(g); g.connect(ctx.destination);
-        o.frequency.value = 880; o.type = 'sine';
-        g.gain.setValueAtTime(0.1, ctx.currentTime);
-        o.start(); o.stop(ctx.currentTime + 0.12);
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
     } catch (e) {}
+    return audioCtx;
+}
+
+// Son : aigu (2 notes) = en règle, grave = refusé/introuvable
+function playTone(success) {
+    const ctx = getCtx();
+    if (!ctx) return;
+    try {
+        if (success) {
+            beepAt(ctx, 660, 0.0, 0.12, 'sine');
+            beepAt(ctx, 990, 0.12, 0.18, 'sine');
+        } else {
+            beepAt(ctx, 200, 0.0, 0.45, 'square');
+        }
+    } catch (e) {}
+}
+
+function beepAt(ctx, freq, start, dur, type) {
+    const o = ctx.createOscillator(); const g = ctx.createGain();
+    o.connect(g); g.connect(ctx.destination);
+    o.type = type; o.frequency.value = freq;
+    g.gain.setValueAtTime(0.18, ctx.currentTime + start);
+    o.start(ctx.currentTime + start);
+    o.stop(ctx.currentTime + start + dur);
 }
 </script>
 @endsection
