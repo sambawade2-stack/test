@@ -159,7 +159,7 @@
                     </div>
                     @if(auth()->user()->canAccess('users'))
                     <a href="{{ route('users.index') }}"
-                       class="text-indigo-200 hover:text-white transition {{ request()->routeIs('users.*') ? 'text-white' : '' }}"
+                       class="hidden lg:block text-indigo-200 hover:text-white transition {{ request()->routeIs('users.*') ? 'text-white' : '' }}"
                        title="Profils & utilisateurs">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
@@ -168,7 +168,7 @@
                     @endif
                     @if(auth()->user()->canAccess('settings'))
                     <a href="{{ route('settings.index') }}"
-                       class="text-indigo-200 hover:text-white transition {{ request()->routeIs('settings.*') ? 'text-white' : '' }}"
+                       class="hidden lg:block text-indigo-200 hover:text-white transition {{ request()->routeIs('settings.*') ? 'text-white' : '' }}"
                        title="Paramètres">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
@@ -176,20 +176,85 @@
                         </svg>
                     </a>
                     @endif
-                    <form method="POST" action="{{ route('logout') }}">
+                    <form method="POST" action="{{ route('logout') }}" class="hidden sm:block">
                         @csrf
                         <button type="submit"
                                 class="text-indigo-200 hover:text-white text-sm transition flex items-center gap-1">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
                             </svg>
-                            <span class="hidden sm:inline">Déconnexion</span>
+                            <span class="hidden 2xl:inline">Déconnexion</span>
                         </button>
                     </form>
                     @endauth
+
+                    {{-- Bouton hamburger (mobile/tablette) --}}
+                    <button type="button" onclick="document.getElementById('mobileMenu').classList.toggle('hidden')"
+                            class="lg:hidden text-white p-1.5 rounded-lg hover:bg-white/10" aria-label="Menu">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                        </svg>
+                    </button>
                 </div>
 
             </div>
+
+            {{-- ─── Menu mobile (déroulant) ─────────────────────────────────────── --}}
+            @auth
+            @php $mob = 'block px-3 py-2.5 rounded-lg text-sm font-medium text-indigo-100 hover:bg-white/10 transition'; @endphp
+            <div id="mobileMenu" class="lg:hidden hidden pb-3 pt-2 border-t border-white/10 space-y-0.5">
+
+                <a href="{{ route('dashboard') }}" class="{{ $mob }} {{ request()->routeIs('dashboard') ? 'bg-white/20 text-white' : '' }}">Tableau de bord</a>
+                <a href="{{ route('students.index') }}" class="{{ $mob }} {{ request()->routeIs('students.*') ? 'bg-white/20 text-white' : '' }}">Élèves</a>
+                <a href="{{ route('classrooms.index') }}" class="{{ $mob }} {{ request()->routeIs('classrooms.*') ? 'bg-white/20 text-white' : '' }}">Classes</a>
+
+                @if(auth()->user()->canAccess('attendance'))
+                <a href="{{ route('attendance.index') }}" class="{{ $mob }} {{ request()->routeIs('attendance.*') ? 'bg-white/20 text-white' : '' }}">Présences</a>
+                @endif
+
+                @if(in_array(auth()->user()->role, ['admin','directeur','comptable','surveillant','caissier']))
+                <a href="{{ route('scan.index') }}" class="{{ $mob }} flex items-center gap-2 {{ request()->routeIs('scan.*') ? 'bg-white/20 text-white' : '' }}">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/></svg>
+                    Scanner un badge
+                </a>
+                @endif
+
+                @if(auth()->user()->canAccess('personnel_view'))
+                <p class="px-3 pt-2 pb-1 text-[11px] uppercase tracking-wide text-indigo-300">Personnel</p>
+                <a href="{{ route('teachers.index') }}" class="{{ $mob }}">Enseignants</a>
+                <a href="{{ route('staff.index') }}" class="{{ $mob }}">Personnel admin</a>
+                <a href="{{ route('payrolls.index') }}" class="{{ $mob }}">Fiches de paie</a>
+                @endif
+
+                @if(auth()->user()->canAccess('payments'))
+                <p class="px-3 pt-2 pb-1 text-[11px] uppercase tracking-wide text-indigo-300">Paiements</p>
+                <a href="{{ route('payments.index') }}" class="{{ $mob }}">Tous les paiements</a>
+                <a href="{{ route('payments.create') }}" class="{{ $mob }}">Nouveau paiement</a>
+                <a href="{{ route('payments.unpaid') }}" class="{{ $mob }} text-red-200">Impayés du mois</a>
+                @endif
+
+                @if(auth()->user()->canAccess('finance'))
+                <a href="{{ route('finance.index') }}" class="{{ $mob }} {{ request()->routeIs('finance.*') ? 'bg-white/20 text-white' : '' }}">Finances</a>
+                @endif
+
+                <div class="border-t border-white/10 my-1"></div>
+
+                @if(auth()->user()->canAccess('users'))
+                <a href="{{ route('users.index') }}" class="{{ $mob }}">Profils & utilisateurs</a>
+                @endif
+                @if(auth()->user()->canAccess('settings'))
+                <a href="{{ route('settings.index') }}" class="{{ $mob }}">Paramètres</a>
+                @endif
+
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="{{ $mob }} w-full text-left flex items-center gap-2 text-red-200">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                        Déconnexion
+                    </button>
+                </form>
+            </div>
+            @endauth
         </div>
     </nav>
 
